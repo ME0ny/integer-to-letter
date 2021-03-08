@@ -203,7 +203,7 @@ int ft_key_in_start_arr(char **keys, char *key)
             return (1);
     }
     return (0);
-}g
+}
 
 int     main(int argc, char **argv)
 {
