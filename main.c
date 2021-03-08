@@ -90,31 +90,32 @@ char *ft_atoi(char *str)
 
     number = malloc(sizeof(char) * ft_lenstr(str));
     i = 0;
-    while(*(str + i) >= '0' && *(str + i) <= '9')
+    while (*(str + i) >= '0' && *(str + i) <= '9')
     {
         number[i] = str[i];
         i++;
     }
     number[i] = '\0';
+    while (*(str + i) != ':' && *(str + i) != ' ' && *(str + i) != '\n')
+        i++;
+    if (*(str + i) == '\n')
+        return (0);
     key = ft_strcmp(number);
     free(number);
-    if (key[0] == 0 || !(str[i] == ':' || str[i] == ' '))
-        return (0);
     return (key);
 }
 
 int ft_find_value(char *str, t_dict *curr)
 {
     int     i;
-    int     flag;
-    char    *temp;
     char    *value;
 
     i = 0;
     while(str[i] != '\n' && str[i] != ':')
         i++;
-    if (str[i] != ':')
+    if (str[i] == '\n')
         return (0);
+    i++;
     while(str[i] != '\n' && str[i] == ' ')
         i++;
     value  = ft_strcmp(str + i);
@@ -131,7 +132,7 @@ int ft_strdiff(char *s1, char *s2)
     while(s1[i] != 0 || s2[i] != 0)
     {
         if(s1[i] != s2[i])
-            
+            return (1);
         i++;
     }
     return (0);
@@ -144,7 +145,6 @@ int ft_check_key(char *key, t_dict *dict)
     curr = dict;
     while (curr->next != NULL)
     {
-        printf()
         if (ft_strdiff(key, curr->key) == 0)
             return (0);
         curr = curr->next;
@@ -168,7 +168,6 @@ int     main(int argc, char **argv)
     lendict = 0;
     di = -1;
     fd = open(file, O_RDONLY);
-    //write(1, "1", 1);
     if (fd == -1)
     {
         write(2, "Dict Error\n", 11);
@@ -185,30 +184,24 @@ int     main(int argc, char **argv)
             dictbuff[++di] = buff[0];
         else
         {
-            //write(1, "1", 1);
             dictbuff[++di] = 0;
             curr->key = ft_atoi(dictbuff);
-            //write(1, "0", 1);
             int check_key = ft_check_key(curr->key, dict);
-            //write(1, "3", 1);
             int find_value = ft_find_value(dictbuff, curr);
-            //write(1, "2", 1);
             if (curr->key == 0 || check_key == 0
             || find_value == 0)
             {
-                //write(1, "0", 1);
-                printf("string\n>>%s\nkey\n>>%d\nvalue\n>>%d\n", dictbuff, check_key, find_value);
                 write(2, "Dict Error\n", 11);
                 //ft_free(curr);
                 free(dictbuff);
                 return (0);
             }
-            //write(1, "0", 1);
             if (prev != NULL)
                 prev->next = curr;
             prev = curr;
             curr = ft_create_node();
             di = -1;
+            printf("%s\n", prev->value);
         }
     }
     free(dictbuff);
