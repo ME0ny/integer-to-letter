@@ -203,7 +203,7 @@ int ft_key_in_start_arr(char **keys, char *key)
             return (1);
     }
     return (0);
-}
+}g
 
 int     main(int argc, char **argv)
 {
@@ -242,7 +242,6 @@ int     main(int argc, char **argv)
             dictbuff[++di] = 0;
             curr->key = ft_atoi(dictbuff);
             lendict-=ft_key_in_start_arr(keys, curr->key);
-            //write(1, "0", 1);
             int check_key = ft_check_key(curr->key, dict);
             int find_value = ft_find_value(dictbuff, curr);
             if (curr->key == 0 || check_key == 0
@@ -270,6 +269,7 @@ int     main(int argc, char **argv)
         free(dictbuff);
         return (0);
     }
+
     /*
     ...
     
