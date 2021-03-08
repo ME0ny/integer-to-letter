@@ -152,6 +152,59 @@ int ft_check_key(char *key, t_dict *dict)
     return (1);
 }
 
+void    ft_free(t_dict *dict)
+{
+    if (dict == NULL)
+        return ;
+    free(dict->key);
+    free(dict->value);
+    ft_free(dict->next);
+}
+
+char **ft_create_key_arr()
+{
+    char    **key;
+    int     fd;
+    char    buff[1];
+    char    *keybuf;
+    int     i;
+    int     j;
+
+    key = malloc(sizeof(char *) * 41);
+    fd = open("key", O_RDONLY);
+    keybuf = malloc(sizeof(char) * 39);
+    i = -1;
+    j = -1;
+    while(read(fd, buff, 1))
+    {
+        if (*buff != '\n')
+            keybuf[++i] = buff[0];
+        else
+        {
+            keybuf[++i] = 0;
+            key[++j] = ft_strcmp(keybuf);
+            //printf("%s\n", key[j]);
+            i = -1;
+        }
+    }
+    free(keybuf);
+    close(fd);
+    return (key);
+}
+
+int ft_key_in_start_arr(char **keys, char *key)
+{
+    int i;
+
+    i = -1;
+    while (++i < 41)
+    {
+        if(ft_strdiff(keys[i], key) == 0)
+            return (1);
+    }
+    return (0);
+}
+
 int     main(int argc, char **argv)
 {
     char    *file = "numbers.dict";
@@ -164,10 +217,12 @@ int     main(int argc, char **argv)
     t_dict  *dict;
     t_dict  *curr;
     t_dict  *prev;
+    char    **keys;
 
-    lendict = 0;
+    lendict = 40;
     di = -1;
     fd = open(file, O_RDONLY);
+    keys = ft_create_key_arr();
     if (fd == -1)
     {
         write(2, "Dict Error\n", 11);
@@ -186,14 +241,17 @@ int     main(int argc, char **argv)
         {
             dictbuff[++di] = 0;
             curr->key = ft_atoi(dictbuff);
+            lendict-=ft_key_in_start_arr(keys, curr->key);
+            //write(1, "0", 1);
             int check_key = ft_check_key(curr->key, dict);
             int find_value = ft_find_value(dictbuff, curr);
             if (curr->key == 0 || check_key == 0
             || find_value == 0)
             {
                 write(2, "Dict Error\n", 11);
-                //ft_free(curr);
+                ft_free(dict);
                 free(dictbuff);
+                close(fd);
                 return (0);
             }
             if (prev != NULL)
@@ -201,10 +259,17 @@ int     main(int argc, char **argv)
             prev = curr;
             curr = ft_create_node();
             di = -1;
-            printf("%s\n", prev->value);
         }
     }
+    close(fd);
     free(dictbuff);
+    if (lendict != 0)
+    {
+        write(2, "Dict Error\n", 11);
+        ft_free(dict);
+        free(dictbuff);
+        return (0);
+    }
     /*
     ...
     
